@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Starting Bid</th>
+            <th scope="col">Listing End Date</th>
+            <th scope="col">Current Bid</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">{{title}}</th>
+            <td>{{shortDescription}}</td>
+            <td>{{startingBid}}</td>
+            <td>{{listingEndDate}}</td>
+            <td>{{currentBid}}</td>
+          </tr>
+        </tbody>
+      </table>  
+{% endblock %}

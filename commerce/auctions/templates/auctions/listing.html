@@ -1,0 +1,135 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="container" id="product-section">
+        <div class="row">
+            {% if noUserMessage %}
+            <div class="col-md-12">
+                <div class="alert alert-success" role="alert">
+                    {{noUserMessage}}
+                </div>
+            </div>
+            {% endif %}
+            {% if bidMessage %}
+            <div class="col-md-12">
+                <div class="alert alert-success" role="alert">
+                    Your bid has been submitted!
+                </div>
+            </div>
+            {% endif %}
+            {% if wishlistMessage %}
+            <div class="col-md-12">
+                <div class="alert alert-success" role="alert">
+                    {{ wishlistMessage }}
+                </div>
+            </div>
+            {% endif %}
+            {% if user.username == userName %}
+            <div class="col-md-12">
+                <input class="btn btn-default btn-lg btn-qty" value="" type="hidden"/>
+                <button class="btn btn-lg btn-default btn-full-width">Close Listing</button>    
+            </div>
+            {% endif %}
+            <div class="row">&nbsp;</div>
+            <div class="col-md-6">
+                <img src="040516-brownie-flash.jpg" alt="Kodak Brownie Flash B Camera" class="image-responsive" />
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>{{title}}</h1>
+                    </div>
+                    <div class="col-md-12">
+                        <p class="description">
+                            {{shortDescription}}
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="monospaced">Item Number: {{id}}</span>
+                    </div>
+                    <div class="col-md-12">
+                        <span class="monospaced">Seller: {{userName}}</span>
+                    </div>
+                </div><!-- end row -->
+                 <div class="row">
+                    <div class="col-md-12">
+                         <h4 class="product-price">Starting Bid: ${{startingBid}}</h4>
+                         <h5>Auction Ends: {{listingEndDate}}</h5>
+                         <h5>Bids: [Number of Bids]</h5>
+                    </div>
+                  </div>
+                  <!-- Bid Button -->
+                  {% if user.username != userName %}
+                <form action="{% url 'listing' %}" method="post">
+                    {% csrf_token %}
+                    <div class="row add-to-cart">
+                            <div class="col-md-5 product-qty">
+                                <input class="btn btn-default btn-lg btn-qty" value="" name="bid" />
+                                <input class="btn btn-default btn-lg btn-qty" value="{{id}}" type="hidden" name="bidItemID"/>
+                            </div>
+                            {% if user.is_authenticated %}
+                            <div class="col-md-4">
+                                <input class="btn-lg btn-dark btn-full-width" type="submit" value="Submit Bid">
+                            </div>
+                            {% endif %}
+                    </div>
+                </form>
+              {% endif %}
+                  <!-- Bid Button -->
+                  <!-- Wishlist Button -->
+                  <div class="row">&nbsp;</div>
+              {% if user.username != userName %}
+                <form action="{% url 'listing' %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-10">
+                            <input class="btn btn-default btn-lg btn-qty" value="{{title}}" type="hidden" name="wishlistItemTitle"/>
+                            <input class="btn btn-default btn-lg btn-qty" value="{{id}}" type="hidden" name="wishlistItemID"/>
+                            {% if user.is_authenticated%}
+                            <input class="btn-lg btn-dark btn-full-width" type="submit" value="Add to Wishlist">
+                            {% endif %}
+                        </div>
+                    </div>
+                  </form>
+              {% endif %}
+              <!-- Wishlist Button -->
+            </div>
+            <div class="col-md-12">
+               <h3>Product Description</h3>
+               <p>{{longDescription}}</p>
+            </div>
+            <div class="col-md-12">
+                <h3>Comments</h3>
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Last Comment</th>
+                        <th scope="col">User</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>This product is the best ever!</td>
+                        <td>Otto</td>
+                      </tr>
+                    </tbody>
+                  </table>
+               <form>
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Need to ask a question or make a comment?</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        <div class="row">&nbsp;</div>
+                        <input class="btn btn-default btn-lg btn-qty" value="" type="hidden"/>
+                        <button class="btn-lg btn-dark btn-full-width">Make a Comment</button>
+                    </div>
+                </form>
+             </div>
+            
+            <!-- end row -->
+        </div>
+    </div><!-- end row -->
+        
+    </div><!-- end container -->
+{% endblock %}
