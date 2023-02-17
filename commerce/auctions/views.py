@@ -13,26 +13,24 @@ import logging
 
 def index(request):
     
-    listing = Listing.objects.get(id="3")
-    bids = Bids.objects.get(itemNumber="3")
-    startingDate = listing.startingDate
-    auctionLength = listing.auctionLength
-    listingEndDate = startingDate + timedelta(days=auctionLength)
-    currentBid = bids.bid
+    listings = Listing.objects.all()
     listingContent = {
-                    "id": listing.id,
-                    "title": listing.title,
-                    "startingDate": listing.startingDate,
-                    "longDescription": listing.longDescription,
-                    "shortDescription": listing.shortDescription,
-                    "startingBid": listing.startingBid,
-                    "userName": listing.userName,
-                    "listingEndDate": listingEndDate,
-                    "currentBid": currentBid
-                
+                    "listings": listings
                 }
     
     return render(request, "auctions/index.html", listingContent)
+
+def category(request):
+    return render(request, "auctions/categories.html")
+
+def entireWishList(request):
+    
+    wishListItems = wishList.objects.all()
+    wishListContent = {
+                    "wishlist": wishListItems
+                }
+    
+    return render(request, "auctions/wishlist.html", wishListContent)
 
 
 def login_view(request):
@@ -87,9 +85,9 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-def listing(request):
+def listing(request, id):
     
-    listing = Listing.objects.get(id="3")
+    listing = Listing.objects.get(id=id)
     startingDate = listing.startingDate
     auctionLength = listing.auctionLength
     listingEndDate = startingDate + timedelta(days=auctionLength)

@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Wishlist Items</h2>
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Item Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for wishListItems in wishlist %}
+          <tr>
+            <th scope="row"><a href="listing/{{ wishListItems.itemNumber }}" target="_blank">{{wishListItems.title}}</a></th>
+            <td>{{wishListItems.itemNumber}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>  
+{% endblock %}

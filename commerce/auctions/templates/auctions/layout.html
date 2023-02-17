@@ -28,6 +28,9 @@
                     <a class="nav-link" href="{% url 'new-listing' %}">Create Listing</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'wishlist' %}">Wishlist</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                 </li>
             {% else %}
@@ -36,6 +39,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'categories' %}">Categories</a>
                 </li>
             {% endif %}
         </ul>
