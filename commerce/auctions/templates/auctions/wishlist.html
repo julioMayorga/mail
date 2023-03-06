@@ -3,11 +3,24 @@
 {% block body %}
     <h2>Wishlist Items</h2>
 
+    <div class="container" id="product-section">
+      <div class="row">
+          {% if message %}
+          <div class="col-md-12">
+              <div class="alert alert-success" role="alert">
+                  {{message}}
+              </div>
+          </div>
+          {% endif %}
+      </div>
+    </div>
+
     <table class="table">
         <thead>
           <tr>
             <th scope="col">Title</th>
             <th scope="col">Item Number</th>
+            <th scope="col">Remove From Wishlist</th>
           </tr>
         </thead>
         <tbody>
@@ -15,6 +28,14 @@
           <tr>
             <th scope="row"><a href="listing/{{ wishListItems.itemNumber }}" target="_blank">{{wishListItems.title}}</a></th>
             <td>{{wishListItems.itemNumber}}</td>
+            <form action="{% url 'wishlist' %}" method="post">
+            {% csrf_token %}
+            <td>
+                <input autofocus type="hidden" name="wishListItem" value="{{ wishListItems.itemNumber }}">
+                <input autofocus type="hidden" name="userID" value="{{ wishListItems.userID }}">
+                <input class="btn btn-primary" type="submit" value="Remove">
+            </td>
+            </form>
           </tr>
           {% endfor %}
         </tbody>

@@ -16,13 +16,15 @@ class Listing(models.Model):
     auctionLength = models.IntegerField()
     longDescription = models.CharField(max_length=4000)
     shortDescription = models.CharField(max_length=3000)
+    category = models.CharField(max_length=4000, blank=True, null=True)
+    deactivateItem = models.CharField(max_length=4000, blank=True, null=True)
 
 
 class Bids(models.Model):
     userID = models.IntegerField(blank=True, null=True)
     userName = models.CharField(max_length=200, blank=True, null=True)
     itemNumber = models.IntegerField()
-    bid = models.DecimalField(max_digits=5, decimal_places=2)
+    bid = models.DecimalField(max_digits=15, decimal_places=2)
     bidDate = models.DateField()
 
 
@@ -36,3 +38,9 @@ class wishList(models.Model):
     userName = models.CharField(max_length=200, blank=True, null=True)
     itemNumber = models.IntegerField()
     title = models.CharField(max_length=2000)
+    
+class listingComments(models.Model):
+    userID = models.IntegerField(blank=True, null=True)
+    userName = models.CharField(max_length=200, blank=True, null=True)
+    itemNumber = models.IntegerField()
+    comment = models.CharField(max_length=3000)

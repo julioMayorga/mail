@@ -1,0 +1,31 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% for categoryName in categoryType %}   
+        {% if forloop.first%}  
+            <h2>{{categoryName.category|title}}</h2>
+        {% endif %}
+    {% endfor %}
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Starting Bid</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for categories in categoryType %}
+          <tr>
+            <th scope="row"><a href="listing/{{ categories.id }}" target="_blank">{{categories.title}}</a></th>
+            <td>{{categories.shortDescription}}</td>
+            <td>{{categories.startingBid}}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td><h2>No active listings in this category</h2></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>  
+{% endblock %}

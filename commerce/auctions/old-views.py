@@ -5,10 +5,9 @@ from django.shortcuts import render
 from django.urls import reverse
 from datetime import datetime, timedelta
 from django.db import connection, transaction
-from django.db.models import Avg, Max, Min, Sum
 
 
-from .models import User, Listing, wishList, Bids, listingComments
+from .models import User, Listing, wishList, Bids
 import datetime
 import logging
 
@@ -41,7 +40,6 @@ def entireWishList(request):
         itemNumber = request.POST["wishListItem"]
         userID = request.POST["userID"]
         removeItem = wishList.objects.get(userID=userID, itemNumber=itemNumber)
-        
         removeItem.delete()
         
         wishListItems = wishList.objects.all()
@@ -130,7 +128,9 @@ def listing(request, id):
     auctionLength = listing.auctionLength
     listingEndDate = startingDate + timedelta(days=auctionLength)
     
-    listingContent = {
+    if request.user.is_authenticated:
+        
+        listingContent = {
             "id": listing.id,
             "title": listing.title,
             "startingDate": listing.startingDate,
@@ -139,121 +139,115 @@ def listing(request, id):
             "startingBid": listing.startingBid,
             "userName": listing.userName,
             "listingEndDate": listingEndDate,
-            "listingDeactivated": listing.deactivateItem,
-            "message": "",
-            "maxBid": "",
-            "winningUser": "",
-            "comments": ""
         }
-    
-    if request.user.is_authenticated:
-        
-        userID = request.user.id
-        userName = str(request.user)
         
         if request.method == "POST":
             
-            if 'submit_bid' in request.POST:
-                bid = request.POST["bid"]
-                
-                maxBid = Bids.objects.aggregate(Max('bid'))
-                maxBidFormat = maxBid['bid__max']
-                maxBidFormatted = float(maxBidFormat)
-                
-                if float(bid) <= maxBidFormatted:
-                    
-                    listingContent.update({
-                    "message": "You must increase your bid!"
-                    })
-
-                    return render(request, "auctions/listing.html", listingContent)
-                else:
-                
-                    addBid = Bids.objects.create(userID=userID, userName=userName, itemNumber=id, bid=bid, bidDate=datetime.date.today())
-
-                    listingContent.update({
-                        "message": "Your bid has been submitted!"
-                    })
-                    
-                    return render(request, "auctions/listing.html", listingContent)                                                                     
+            bid = ""
+            wishlistItemTitle = ""
+            removeItemID = ""
             
-            if 'wishlist_submit' in request.POST:
-                wishlistItemTitle = request.POST["wishlistItemTitle"]
-                
-                try:
+            if bid in request.POST:
+                bid = request.POST["bid"]
+                bidItemID = request.POST["bidItemID"]
+                userID = request.user.id
+                userName = str(request.user)
+
+                addBid = Bids.objects.create(userID=userID, userName=userName, itemNumber=bidItemID, bid=bid, bidDate=datetime.date.today())
                     
-                    searchItemsInWishlist = wishList.objects.get(itemNumber=id)
-                    foundItem = searchItemsInWishlist.itemNumber
-                
-                    if id == foundItem:
-                        listingContent.update({
-                        "message": "Item is already on your wishlist!"
-                        })
-                        
-                        return render(request, "auctions/listing.html", listingContent)
-                
-                except wishList.DoesNotExist:
-                
-                        addWishlistItem = wishList.objects.create(userID=userID, userName=userName, itemNumber=id, title=wishlistItemTitle)
-                        
-                        listingContent.update({
-                            "message": "You have saved the listing to your wishlist!"
-                        })
-                        
-                        return render(request, "auctions/listing.html", listingContent)
-                
-            if 'submit_close' in request.POST:
-                removeItem = request.POST["removeItemValue"]
-                
-                listingToRemove = Listing.objects.filter(id=id)
-                listingToRemove.update(deactivateItem=removeItem)
-                
-                listingContent.update({
-                    "message": "Your listing has been deactivated!"
-                })
-                
+                addBid.save()
+                    
+                listingContent = {
+                    "id": listing.id,
+                    "title": listing.title,
+                    "startingDate": listing.startingDate,
+                    "longDescription": listing.longDescription,
+                    "shortDescription": listing.shortDescription,
+                    "startingBid": listing.startingBid,
+                    "userName": listing.userName,
+                    "listingEndDate": listingEndDate,
+                    "bidMessage": "Your bid has been saved!"
+                    
+                }
+                    
                 return render(request, "auctions/listing.html", listingContent)
             
-            if 'makeComment_submit' in request.POST:
+            if wishlistItemTitle in request.POST:
                 
-                commentValue = request.POST.get("listingComment")
+                wishlistItemTitle = request.POST["wishlistItemTitle"]
+                wishlistItemID = request.POST["wishlistItemID"]
+                userID = request.user.id
+                userName = str(request.user)
                 
-                getCommentDB = listingComments.objects.create(userID=userID, userName=userName, itemNumber=id, comment=commentValue)
+                addWishlistItem = wishList.objects.create(userID=userID, userName=userName, itemNumber=wishlistItemID, title=wishlistItemTitle)
                 
-                getComments = listingComments.objects.all()
+                addWishlistItem.save()
                 
+                listingContent = {
+                    "id": listing.id,
+                    "title": listing.title,
+                    "startingDate": listing.startingDate,
+                    "longDescription": listing.longDescription,
+                    "shortDescription": listing.shortDescription,
+                    "startingBid": listing.startingBid,
+                    "userName": listing.userName,
+                    "listingEndDate": listingEndDate,
+                    "wishlistMessage": "Your item has been saved!"
                 
-                listingContent.update({
-                    "message": "Your comment has been added!",
-                    "comments": getComments
-                })
+                }
+                
+                return render(request, "auctions/listing.html", listingContent)
+                
+            if removeItemID in request.POST:
+                removeItem = request.POST["removeItemID"]
+                userName = request.POST["userName"]
+                
+                ##cursor = connection.cursor()
+                ##with connection.cursor() as cursor:
+                    #cursor.execute('UPDATE auctions_listing SET deactivateItem = 1 WHERE id = %s AND userName = %s ', [deactivateItemID, userName])
+                
+                ##listingToRemove = Listing.objects.get(id=removeItem)
+                ##listingToRemove.deactivateItem = True
+                ##listingToRemove.save()
+                
+                listingToRemove = Listing.objects.filter(id=removeItem)
+                listingToRemove.update(deactivateItem="True")
+                
+                listingContent = {
+                    "id": listing.id,
+                    "title": listing.title,
+                    "startingDate": listing.startingDate,
+                    "longDescription": listing.longDescription,
+                    "shortDescription": listing.shortDescription,
+                    "startingBid": listing.startingBid,
+                    "userName": listing.userName,
+                    "listingEndDate": listingEndDate,
+                    "wishlistMessage": "Your listing has been closed!"
+                
+                }
+                
                 
                 return render(request, "auctions/listing.html", listingContent)
         
         else:
             
-            wonBidding = Bids.objects.aggregate(Max('bid'))
-            wonBiddingFormat = wonBidding['bid__max']
-            wonBiddingFormatted = float(wonBiddingFormat)
-            searchWinner = Bids.objects.get(bid=wonBiddingFormatted)
-            winner = searchWinner.userName
-            getComments = listingComments.objects.all()
-            
-            listingContent.update({
-                "maxBid": wonBiddingFormatted,
-                "winningUser": winner,
-                "comments": getComments
-            })
-            
             return render(request, "auctions/listing.html", listingContent)
         
     else:
-        
-        listingContent.update({
-            "message": "You must log in to view details about this listing."
-        })
+            listingContent = {
+                    "id": listing.id,
+                    "title": listing.title,
+                    "startingDate": listing.startingDate,
+                    "longDescription": listing.longDescription,
+                    "shortDescription": listing.shortDescription,
+                    "startingBid": listing.startingBid,
+                    "userName": listing.userName,
+                    "listingEndDate": listingEndDate,
+                    "noUserMessage": "You must log in to bid or add to your wishlist"
+                
+                }
             
-        return render(request, "auctions/listing.html", listingContent)
+            return render(request, "auctions/listing.html", listingContent)
 
 def newListing(request):
     if request.method == "POST":
@@ -265,7 +259,7 @@ def newListing(request):
         auctLength = request.POST["auctLength"]
         userID = request.user.id
         userName = str(request.user)
-        categories = request.POST["category"]
+        categories = request.POST("category")
 
         # update the listing and image objects
         addListing = Listing.objects.create(title=listingTitle, startingBid=startingBid, startingDate=datetime.date.today(),
