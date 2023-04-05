@@ -249,9 +249,14 @@ function load_mailbox(mailbox) {
                             `;
 
                             })
-
-
                         });
+
+                        fetch(`/emails/${each.id}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({
+                                read: true
+                            })
+                          });
 
                      })
                   
