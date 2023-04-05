@@ -181,8 +181,6 @@ function load_mailbox(mailbox) {
 
                 setTimeout(function() {resolve (
 
-                //    document.querySelector('.email-row').getAttribute('id')
-
                     document.querySelectorAll('.email-row').forEach(each => {
 
                         console.log(each.id);
@@ -257,92 +255,8 @@ function load_mailbox(mailbox) {
 
                      })
                   
-                  );}, 4000);
+                  );}, 4000); //updating code
           });
-          
-        //   console.log(await myPromise);
-
-        //   for(i in await myPromise) {
-
-        //      let pathID = await myPromise.item(i).id;
-        //      console.log(pathID);
-
-        //   }
-
-        //   let pathID = await myPromise;
-
-        //   console.log('This is my path ID: ', pathID);
-
-        // Adds the link to only the first div elements
-        //   if (pathID == '') {
-        //     console.log('Path not found')
-        //   }else{
-
-        //     document.querySelector('.email-row').addEventListener('click', function() {
-        //         fetch(`/emails/${pathID}`)
-        //         .then(response => response.json())
-        //         .then(email => {
-        //             // ... do something else with email ...
-        //             document.querySelector('#emails-view').style.display = 'none';
-        //             document.querySelector('#entire-email-view').style.display = 'block';
-        //             document.querySelector('#entire-email-view').innerHTML = `
-        //             <div class="row">
-        //                 <div class="col-xs-6">
-        //                     <div class="row">
-        //                             <div class="col-xs-6">&nbsp;&nbsp;&nbsp;</div>
-        //                             <div class="col-xs-6">
-        //                                 Subject: ${email.subject}
-        //                             </div>
-        //                         </div>
-        //                         <div class="row">
-        //                             <div class="col-xs-12">
-        //                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        //                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        //                             </div>
-        //                         </div>
-        //                         <div class="row">
-        //                             <div class="col-xs-6">&nbsp;&nbsp;&nbsp;</div>
-        //                             <div class="col-xs-6">
-        //                                 Date Sent: ${email.timestamp}
-        //                             </div>
-        //                         </div>
-        //                         <div class="row">   
-        //                             <div class="col-xs-12">
-        //                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        //                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        //                             </div>
-        //                         </div>
-        //                         <div class="row">
-        //                             <div class="col-xs-6">&nbsp;&nbsp;&nbsp;</div>
-        //                             <div class="col-xs-6">
-        //                                 ${email.body}
-        //                             </div>
-        //                         </div>
-        //                     </div>                                                                      
-        //                 </div>
-        //             </div>
-        //             <div class="row">
-        //                 <div class="col-xs-6">
-        //                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        //                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        //                 </div>
-        //             </div>
-        //             <div class="row">
-        //                 <div class="col-xs-6">
-        //                     <div class="form-group">
-        //                         <form id="compose-form">
-        //                                 <input type="hidden" id="compose-recipients">
-        //                                 <input type="hidden" id="compose-subject" >
-        //                                 <input type="submit" class="btn btn-primary" value="Reply"/>
-        //                         </form>
-        //                     </div>
-        //                 </div>
-        //             </div>    
-        //         `;
-
-        //         })
-        //     });
-        //   }
     } catch (e) {
         console.log("caught:", e);
     }
