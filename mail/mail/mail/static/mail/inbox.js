@@ -64,6 +64,8 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#entire-email-view').style.display = 'none';
+  document.querySelector('#alert-box').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3><br>
@@ -128,7 +130,7 @@ function load_mailbox(mailbox) {
     .then(response => response.json())
     .then(emails => {
         // Print emails
-        console.log(emails);
+        console.log('These are the emails: ' + emails);
 
         // ... do something else with emails ...
     document.querySelector('#emails-view').innerHTML += emails.map(mailReceived =>
@@ -148,6 +150,10 @@ function load_mailbox(mailbox) {
                     <div class="col-xs-6">
                         ${mailReceived.timestamp}
                     </div>
+                    <div class="col-xs-6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                    <div class="col-xs-6">
+                        <button data-email-id="${mailReceived.id}" type="button" class="btn btn-secondary">Archive</button>
+                    </div>
                 </div>
           </div>
         </div>`) :
@@ -166,14 +172,17 @@ function load_mailbox(mailbox) {
                     <div class="col-xs-6">
                         ${mailReceived.timestamp}
                     </div>
+                    <div class="col-xs-6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                    <div class="col-xs-6">
+                        <button data-email-id="${mailReceived.id}" type="button" class="btn btn-secondary">Archive</button>
+                    </div>
                 </div>
           </div>
         </div>`)
      ).join('<br>')
     });
-  }
-  // Inbox view
-  // Single email view
+
+    // Single email view
   async function emailClick() {
     try {
 
@@ -181,11 +190,23 @@ function load_mailbox(mailbox) {
 
                 setTimeout(function() {resolve (
 
+                    // Select email row
+
                     document.querySelectorAll('.email-row').forEach(each => {
 
+
+                        // Select email row
+                        
                         console.log(each.id);
 
                         each.addEventListener('click', () => {
+
+                            fetch(`/emails/${each.id}`, {
+                                method: 'PUT',
+                                body: JSON.stringify({
+                                    read: false
+                                })
+                              })
                             
                             fetch(`/emails/${each.id}`)
                             .then(response => response.json())
@@ -247,20 +268,34 @@ function load_mailbox(mailbox) {
                                     </div>
                                 </div>    
                             `;
-
                             })
                         });
+                     }
+                     
+                     // Select archive button
+                     
+                     )                  
+                  );
+                
+                    document.querySelectorAll('.btn-secondary').forEach(each => {
 
-                        fetch(`/emails/${each.id}`, {
-                            method: 'PUT',
-                            body: JSON.stringify({
-                                read: true
-                            })
-                          });
+                        let emailID = each.getAttribute('data-email-id');
+                        console.log(emailID);
 
-                     })
-                  
-                  );}, 4000); //updating code
+                        each.addEventListener('click', () => {
+                            fetch(`/emails/${emailID}`, {
+                                method: 'PUT',
+                                body: JSON.stringify({
+                                    archived: true
+                                })
+                              })
+                              document.querySelector('#alert-box').style.display = 'block';
+                              document.querySelector('#alert-box').innerHTML = `<div class="alert alert-success" role="alert"> Message has been archived</div>`
+
+                        });
+                    })
+                
+                }, 4000); //updating code
           });
     } catch (e) {
         console.log("caught:", e);
@@ -268,4 +303,112 @@ function load_mailbox(mailbox) {
   }
 
   emailClick();
+
+// Single email view
+
+
+  }
+  // Inbox view
+
+  if(mailbox == 'archive') {
+            document.querySelector('#emails-view').innerHTML = `<h3>Archived</h3><br>
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="row">
+                        <div class="col-xs-6">&nbsp;&nbsp;&nbsp;</div>
+                        <div class="col-xs-6">
+                            <strong>Email</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </div>
+                        <div class="col-xs-10">&nbsp;&nbsp;&nbsp;</div>
+                        <div class="col-xs-2">
+                            <strong>Subject</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </div>
+                        <div class="col-xs-6">&nbsp;&nbsp;&nbsp;</div>
+                        <div class="col-xs-6">
+                            <strong>Sent Date</strong><br><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    
+        fetch('/emails/archive')
+        .then(response => response.json())
+        .then(email => {
+            // Print email
+            console.log(email);
+                // ... do something else with email ...
+            document.querySelector('#emails-view').innerHTML += email.map(mailArchive =>
+                (mailArchive.archived) ?
+                (
+                    `<div id="${mailArchive.id}" class="email-row row border-top" style="background-color:#FFFFFF; padding: 1em 0;">
+                    <div class="col-xs-6">
+                            <div  class="row">
+                                <div class="col-xs-6">&nbsp;&nbsp;&nbsp;</div>
+                                <div class="col-xs-6">
+                                    ${mailArchive.recipients}
+                                </div>
+                                <div class="col-xs-10">&nbsp;&nbsp;&nbsp;</div>
+                                <div class="col-xs-2">
+                                    ${mailArchive.subject}
+                                </div>
+                                <div class="col-xs-6">&nbsp;&nbsp;&nbsp;</div>
+                                <div class="col-xs-6">
+                                    ${mailArchive.timestamp}
+                                </div>
+                                <div class="col-xs-6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                <div class="col-xs-6">
+                                    <button data-email-id="${mailArchive.id}" type="button" class="btn btn-secondary">Unarchive</button>
+                                </div>
+                            </div>
+                    </div>
+                    </div>`
+                ) :
+                (
+                    `<div>No emails have been archived</div>`
+                )).join('<br>');
+        });
+
+
+        async function emailClick() {
+            try {
+        
+                let myPromise = new Promise(function(resolve) {
+        
+                        setTimeout(function() {resolve (
+        
+                            // Select email row
+                            document.querySelectorAll('.btn-secondary').forEach(each => {
+        
+                                let emailID = each.getAttribute('data-email-id');
+                                console.log(emailID);
+        
+                                each.addEventListener('click', () => {
+                                    console.log('Click occurred on ID: ' + emailID);
+                                    fetch(`/emails/${emailID}`, {
+                                        method: 'PUT',
+                                        body: JSON.stringify({
+                                            archived: false
+                                        })
+                                      })
+                                      
+                                      document.querySelector('#emails-view').innerHTML = `<div class="alert alert-success" role="alert"> Message has been unarchived</div>`
+                            
+                                      
+                                });
+                            })               
+                          );                       
+                        }, 4000); //updating code
+                  });
+
+            } catch (e) {
+                console.log("caught:", e);
+            }
+          }
+        
+          emailClick();
+
+  }
 }

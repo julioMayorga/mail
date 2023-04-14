@@ -11,6 +11,9 @@
     <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
     <hr>
 
+    <div id="alert-box">
+    </div>
+
     <div id="emails-view">
     </div>
 
@@ -37,5 +40,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'mail/inbox.js' %}"></script>
+    <script src="{% static 'mail/inbox.js' %}?rand={% now "U" %}"></script>
 {% endblock %}
